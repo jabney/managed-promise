@@ -21,15 +21,15 @@ const fadeInOut = (anim: Animated.Value) => {
   ]).start();
 };
 
+const opacityInterpolator = (anim: Animated.Value) =>
+  anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.5, 1],
+  });
+
 export const Button: React.FC<Props> = ({ onPress, text }) => {
   const [anim] = useState(() => new Animated.Value(1));
-
-  const [opacity] = useState(() =>
-    anim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0.5, 1],
-    }),
-  );
+  const [opacity] = useState(() => opacityInterpolator(anim));
 
   const handlePress = useCallback(() => {
     onPress();
