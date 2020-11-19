@@ -1,6 +1,7 @@
 import { schemeCategory10, color as d3Color } from 'd3';
 import { Http } from 'app/services/http';
 import { managedPromise } from 'app/lib/managedPromise';
+import { idGenerator } from 'app/lib/idGenerator';
 
 export interface Item {
   id: number;
@@ -14,12 +15,12 @@ export type ReadonlyList = readonly Item[];
 type ListObserver = (list: ReadonlyList) => void;
 type Disposer = () => void;
 
-let nextId = 0;
-
 const getColor = (num: number) =>
   d3Color(schemeCategory10[num % 10])
     ?.darker(2)
     .formatHex() ?? '#777';
+
+const itemId = idGenerator();
 
 export class ListService {
   private list: Item[] = [];
@@ -44,7 +45,7 @@ export class ListService {
   }
 
   async add(): Promise<void> {
-    const id = nextId++;
+    const id = itemId();
     const promise = this.httpGet();
     const color = this.colorForPromise(promise);
     this.list.push({ id, request: `Request ${id}`, color });
