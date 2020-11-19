@@ -1,13 +1,10 @@
-import { schemeCategory10, color as d3Color } from 'd3';
 import { Http } from 'app/services/http';
 import { managedPromise } from 'app/lib/managedPromise';
 import { idGenerator } from 'app/lib/idGenerator';
 
 export interface Item {
   id: number;
-  request: string;
-  response?: string;
-  color: string;
+  responseId: number;
 }
 
 export type ReadonlyList = readonly Item[];
@@ -15,29 +12,25 @@ export type ReadonlyList = readonly Item[];
 type ListObserver = (list: ReadonlyList) => void;
 type Disposer = () => void;
 
-const getColor = (num: number) =>
-  d3Color(schemeCategory10[num % 10])
-    ?.darker(2)
-    .formatHex() ?? '#777';
-
-const itemId = idGenerator();
+const itemIdGenerator = idGenerator();
+const responseIdGenerator = idGenerator();
 
 export class ListService {
   private list: Item[] = [];
   private observers = new Set<ListObserver>();
   private http = new Http(1000);
-  private colorMap = new Map<Promise<any>, string>();
+  private promiseIdMap = new Map<Promise<any>, number>();
   private httpGet = managedPromise<number, { params: any }>(() =>
     this.http.get('/', {}),
   );
 
-  private colorForPromise(promise: Promise<any>) {
-    let color = this.colorMap.get(promise);
-    if (color == null) {
-      color = getColor(this.colorMap.size);
-      this.colorMap.set(promise, color);
+  private getResponseId(promise: Promise<any>) {
+    let id = this.promiseIdMap.get(promise);
+    if (id == null) {
+      id = responseIdGenerator();
+      this.promiseIdMap.set(promise, id);
     }
-    return color;
+    return id;
   }
 
   async getAll(): Promise<ReadonlyList> {
@@ -45,19 +38,12 @@ export class ListService {
   }
 
   async add(): Promise<void> {
-    const id = itemId();
+    const id = itemIdGenerator();
     const promise = this.httpGet();
-    const color = this.colorForPromise(promise);
-    this.list.push({ id, request: `Request ${id}`, color });
+    const responseId = this.getResponseId(promise);
+    this.list.push({ id, responseId });
     this.notify();
-
-    return promise.then((r) => {
-      const index = [...this.colorMap.keys()].indexOf(promise);
-      this.list = this.list.map((item) =>
-        item.id !== id ? item : { ...item, response: `Response ${index + 1}` },
-      );
-      this.notify();
-    });
+    return promise.then((response) => void this.notify());
   }
 
   async delete(id: number): Promise<void> {
