@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text } from 'react-native';
 
 interface Props {
@@ -6,20 +6,19 @@ interface Props {
   text: string;
 }
 
-const fadeInOut = (anim: Animated.Value) => {
-  Animated.sequence([
-    Animated.timing(anim, {
-      toValue: 0,
-      duration: 125,
-      useNativeDriver: true,
-    }),
-    Animated.timing(anim, {
-      toValue: 1,
-      duration: 125,
-      useNativeDriver: true,
-    }),
-  ]).start();
-};
+const fadeIn = (anim: Animated.Value) => () =>
+  Animated.timing(anim, {
+    toValue: 1,
+    duration: 125,
+    useNativeDriver: true,
+  }).start();
+
+const fadeOut = (anim: Animated.Value) => () =>
+  Animated.timing(anim, {
+    toValue: 0,
+    duration: 125,
+    useNativeDriver: true,
+  }).start();
 
 const opacityInterpolator = (anim: Animated.Value) =>
   anim.interpolate({
@@ -31,10 +30,14 @@ export const Button: React.FC<Props> = ({ onPress, text }) => {
   const [anim] = useState(() => new Animated.Value(1));
   const [opacity] = useState(() => opacityInterpolator(anim));
 
-  const handlePress = useCallback(() => {
-    onPress();
-    fadeInOut(anim);
-  }, []);
+  const handlers = useMemo(
+    () => ({
+      fadeIn: fadeIn(anim),
+      fadeOut: fadeOut(anim),
+      onPress: onPress,
+    }),
+    [onPress],
+  );
 
   return (
     <Animated.View
@@ -44,7 +47,11 @@ export const Button: React.FC<Props> = ({ onPress, text }) => {
           opacity,
         },
       ]}>
-      <Pressable style={styles.button} onPress={handlePress}>
+      <Pressable
+        style={styles.button}
+        onPressIn={handlers.fadeOut}
+        onPress={handlers.onPress}
+        onPressOut={handlers.fadeIn}>
         <Text style={styles.buttonText}>{text}</Text>
       </Pressable>
     </Animated.View>
