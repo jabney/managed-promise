@@ -13,5 +13,5 @@ export class Http {
   constructor(private simulatedDelayMs = 1000) {}
 
   get = (url: string, params?: any) =>
-    wait(this.simulatedDelayMs).then(() => ({url, params}));
+    wait(this.simulatedDelayMs).then(() => ({ url, params }));
 }

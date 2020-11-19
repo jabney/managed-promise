@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {ListService, ReadonlyList} from 'app/services/ListService';
+import React, { useEffect, useState } from 'react';
+import { ListService, ReadonlyList } from 'app/services/ListService';
 
 export const ListContext = React.createContext<{
   list: ReadonlyList;
@@ -13,7 +13,7 @@ export const ListContext = React.createContext<{
   clear: () => Promise.reject('context not initialized'),
 });
 
-export const ListProvider: React.FC = ({children}) => {
+export const ListProvider: React.FC = ({ children }) => {
   const [svc] = useState(() => new ListService());
   const [list, setList] = useState<ReadonlyList>([]);
 

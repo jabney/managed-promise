@@ -1,5 +1,5 @@
-import {useState, useCallback} from 'react';
-import {LayoutChangeEvent, LayoutRectangle} from 'react-native';
+import { useState, useCallback } from 'react';
+import { LayoutChangeEvent, LayoutRectangle } from 'react-native';
 
 const _defaultRect: LayoutRectangle = {
   x: 0,
@@ -19,9 +19,12 @@ type UseLayoutResult = [LayoutRectangle, (e: LayoutChangeEvent) => void];
 export const useLayout = (defaultRect = _defaultRect): UseLayoutResult => {
   const [rect, setRect] = useState(defaultRect);
 
-  const onLayout = useCallback(({nativeEvent: {layout}}: LayoutChangeEvent) => {
-    setRect(layout);
-  }, []);
+  const onLayout = useCallback(
+    ({ nativeEvent: { layout } }: LayoutChangeEvent) => {
+      setRect(layout);
+    },
+    [],
+  );
 
   return [rect, onLayout];
 };

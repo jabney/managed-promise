@@ -1,5 +1,5 @@
-import React, {useCallback, useState} from 'react';
-import {Animated, Pressable, StyleSheet, Text} from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { Animated, Pressable, StyleSheet, Text } from 'react-native';
 
 interface Props {
   onPress: () => void;
@@ -21,7 +21,7 @@ const fadeInOut = (anim: Animated.Value) => {
   ]).start();
 };
 
-export const Button: React.FC<Props> = ({onPress, text}) => {
+export const Button: React.FC<Props> = ({ onPress, text }) => {
   const [anim] = useState(() => new Animated.Value(1));
 
   const [opacity] = useState(() =>
