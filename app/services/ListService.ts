@@ -1,6 +1,6 @@
-import {schemeCategory10, color as d3Color} from 'd3';
-import {Http} from 'app/services/http';
-import {managedPromise} from 'app/lib/managedPromise';
+import { schemeCategory10, color as d3Color } from 'd3';
+import { Http } from 'app/services/http';
+import { managedPromise } from 'app/lib/managedPromise';
 
 export interface Item {
   id: number;
@@ -22,17 +22,13 @@ const getColor = (num: number) =>
     .formatHex() ?? '#777';
 
 export class ListService {
-  private _list: Item[] = [];
+  private list: Item[] = [];
   private observers = new Set<ListObserver>();
   private http = new Http(1000);
   private colorMap = new Map<Promise<any>, string>();
-  private httpGet = managedPromise<number, {params: any}>(() =>
+  private httpGet = managedPromise<number, { params: any }>(() =>
     this.http.get('/', {}),
   );
-
-  private get list() {
-    return this._list.slice();
-  }
 
   private colorForPromise(promise: Promise<any>) {
     let color = this.colorMap.get(promise);
@@ -44,43 +40,43 @@ export class ListService {
   }
 
   async getAll(): Promise<ReadonlyList> {
-    return this.list;
+    return this.list.slice();
   }
 
   async add(): Promise<void> {
     const id = nextId++;
     const promise = this.httpGet();
     const color = this.colorForPromise(promise);
-    this._list.push({id, request: `Request ${id}`, color});
+    this.list.push({ id, request: `Request ${id}`, color });
     this.notify();
 
     return promise.then((r) => {
       const index = [...this.colorMap.keys()].indexOf(promise);
-      this._list = this._list.map((item) =>
-        item.id !== id ? item : {...item, response: `Response ${index + 1}`},
+      this.list = this.list.map((item) =>
+        item.id !== id ? item : { ...item, response: `Response ${index + 1}` },
       );
       this.notify();
     });
   }
 
   async delete(id: number): Promise<void> {
-    this._list = this._list.filter((item) => item.id !== id);
+    this.list = this.list.filter((item) => item.id !== id);
     this.notify();
   }
 
   async clear(): Promise<void> {
-    this._list = [];
+    this.list = [];
     this.notify();
   }
 
   observe(observer: ListObserver): Disposer {
     this.observers.add(observer);
-    observer(this.list);
+    observer(this.list.slice());
     return () => void this.observers.delete(observer);
   }
 
   private notify(): void {
-    const list = this.list;
+    const list = this.list.slice();
     for (const observer of this.observers.values()) {
       observer(list);
     }
