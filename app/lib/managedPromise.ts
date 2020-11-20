@@ -1,9 +1,12 @@
+type KeyedPromiseFn<K, T> = (key?: K | null) => Promise<T>;
+
 /**
  * Create a one-at-a-time promise function that will always
  * return the same promise by the same key until it's fulfilled.
+ *
+ * @param fn a function that returns a promise. The key passed to
+ * this function will be passed back to the returned function.
  */
-type KeyedPromiseFn<K, T> = (key?: K | null) => Promise<T>;
-
 export const managedPromise = <K, T>(
   fn: KeyedPromiseFn<K, T>,
 ): KeyedPromiseFn<K, T> => {

@@ -13,7 +13,7 @@ type UseLayoutResult = [LayoutRectangle, (e: LayoutChangeEvent) => void];
 /**
  * Suitable for managing the onLayout handler of a view, as in
  *
- * const [layout, onLayout] = useLayout()
+ * const [rect, onLayout] = useLayout()
  * return <View onLayout={onLayout}>...</View>
  */
 export const useLayout = (defaultRect = _defaultRect): UseLayoutResult => {
