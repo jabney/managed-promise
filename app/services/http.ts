@@ -15,3 +15,5 @@ export class Http {
   get = (url: string, params?: any) =>
     wait(this.simulatedDelayMs).then(() => ({ url, params }));
 }
+
+export default new Http();
