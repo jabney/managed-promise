@@ -1,4 +1,4 @@
-import http from 'app/services/http';
+import http, { Http } from 'app/services/http';
 import { managedPromise } from 'app/lib/managedPromise';
 import { idGenerator } from 'app/lib/idGenerator';
 
@@ -19,9 +19,7 @@ export class ListService {
   private list: Item[] = [];
   private observers = new Set<ListObserver>();
   private promiseIdMap = new Map<Promise<any>, number>();
-  private httpGet = managedPromise<number, { params: any }>(() =>
-    http.get('/', {}),
-  );
+  private httpGet = managedPromise<void, any>(() => http.get('/'));
 
   private getResponseId(promise: Promise<any>) {
     let id = this.promiseIdMap.get(promise);
