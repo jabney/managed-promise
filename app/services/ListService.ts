@@ -1,10 +1,11 @@
-import http, { Http } from 'app/services/http';
+import http from 'app/services/http';
 import { managedPromise } from 'app/lib/managedPromise';
 import { idGenerator } from 'app/lib/idGenerator';
+import { groupIdGenerator } from 'app/lib/groupIdGenerator';
 
 export interface Item {
   id: number;
-  responseId: number;
+  groupId: number;
 }
 
 export type ReadonlyList = readonly Item[];
@@ -12,35 +13,24 @@ export type ReadonlyList = readonly Item[];
 type ListObserver = (list: ReadonlyList) => void;
 type Disposer = () => void;
 
-const itemIdGenerator = idGenerator();
-const responseIdGenerator = idGenerator();
-
 export class ListService {
   private list: Item[] = [];
   private observers = new Set<ListObserver>();
-  private promiseIdMap = new Map<Promise<any>, number>();
+  private itemId = idGenerator();
+  private groupId = groupIdGenerator();
   private httpGet = managedPromise<void, any>(() => http.get('/'));
-
-  private getResponseId(promise: Promise<any>) {
-    let id = this.promiseIdMap.get(promise);
-    if (id == null) {
-      id = responseIdGenerator();
-      this.promiseIdMap.set(promise, id);
-    }
-    return id;
-  }
 
   async getAll(): Promise<ReadonlyList> {
     return this.list.slice();
   }
 
   async add(): Promise<void> {
-    const id = itemIdGenerator();
+    const id = this.itemId();
     const promise = this.httpGet();
-    const responseId = this.getResponseId(promise);
-    this.list.push({ id, responseId });
+    const groupId = this.groupId(promise);
+    this.list.push({ id, groupId });
     this.notify();
-    return promise.then((response) => void this.notify());
+    return promise.then((r) => void this.notify());
   }
 
   async delete(id: number): Promise<void> {

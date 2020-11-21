@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ListService, ReadonlyList } from 'app/services/ListService';
 
-export const ListContext = React.createContext<{
+const ListContext = React.createContext<{
   list: ReadonlyList;
   addItem: () => Promise<void>;
   deleteItem: (id: number) => Promise<void>;
@@ -31,3 +31,5 @@ export const ListProvider: React.FC = ({ children }) => {
     </ListContext.Provider>
   );
 };
+
+export const useListContext = () => useContext(ListContext);
