@@ -2,6 +2,7 @@ import http from 'app/services/http'
 import { managedPromise } from 'app/lib/managedPromise'
 import { idGenerator } from 'app/lib/idGenerator'
 import { groupIdGenerator } from 'app/lib/groupIdGenerator'
+import { Subject, Observer, Disposer } from 'app/lib/subject'
 
 export interface Item {
   id: number
@@ -10,12 +11,9 @@ export interface Item {
 
 export type ReadonlyList = readonly Item[]
 
-type ListObserver = (list: ReadonlyList) => void
-type Disposer = () => void
-
 export class ListService {
   private list: Item[] = []
-  private observers = new Set<ListObserver>()
+  private subject = new Subject<ReadonlyList>()
   private itemId = idGenerator()
   private groupId = groupIdGenerator()
   private httpGet = managedPromise<void, any>(() => http.get('/'))
@@ -47,16 +45,11 @@ export class ListService {
     this.notify()
   }
 
-  observe(observer: ListObserver): Disposer {
-    this.observers.add(observer)
-    observer(this.listCopy())
-    return () => void this.observers.delete(observer)
+  observe(observer: Observer<ReadonlyList>): Disposer {
+    return this.subject.observe(observer, this.listCopy())
   }
 
   private notify(): void {
-    const list = this.listCopy()
-    for (const observer of this.observers.values()) {
-      observer(list)
-    }
+    this.subject.notify(this.listCopy())
   }
 }
