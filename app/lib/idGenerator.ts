@@ -1,5 +1,5 @@
 /**
- * Create a function to generate monotinic numeric ids.
+ * Create a function to generate monotonic numeric ids.
  *
  * @param start the starting id number
  */
