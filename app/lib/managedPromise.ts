@@ -2,7 +2,7 @@ type KeyedPromiseFn<K, T> = (key?: K) => Promise<T>
 
 /**
  * Create a one-at-a-time promise function that will always
- * return the same promise by the same key until it's fulfilled.
+ * return the same promise for the same key until it's fulfilled.
  *
  * @param fn a function that returns a promise. The key passed to
  * this function will be passed back to the returned function.
