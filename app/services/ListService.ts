@@ -20,15 +20,19 @@ export class ListService {
   private groupId = groupIdGenerator()
   private httpGet = managedPromise<void, any>(() => http.get('/'))
 
-  async getAll(): Promise<ReadonlyList> {
+  private listCopy(): ReadonlyList {
     return this.list.slice()
+  }
+
+  async getAll(): Promise<ReadonlyList> {
+    return this.listCopy()
   }
 
   async add(): Promise<void> {
     const id = this.itemId()
     const promise = this.httpGet()
     const groupId = this.groupId(promise)
-    this.list.push({ id, groupId })
+    this.list = [...this.list, { id, groupId }]
     this.notify()
     return promise.then((r) => void this.notify())
   }
@@ -45,12 +49,12 @@ export class ListService {
 
   observe(observer: ListObserver): Disposer {
     this.observers.add(observer)
-    observer(this.list.slice())
+    observer(this.listCopy())
     return () => void this.observers.delete(observer)
   }
 
   private notify(): void {
-    const list = this.list.slice()
+    const list = this.listCopy()
     for (const observer of this.observers.values()) {
       observer(list)
     }
