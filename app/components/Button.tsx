@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text } from 'react-native';
+import React, { useMemo, useState } from 'react'
+import { Animated, Pressable, StyleSheet, Text } from 'react-native'
 
 interface Props {
-  onPress: () => void;
-  text: string;
+  onPress: () => void
+  text: string
 }
 
 const fadeIn = (anim: Animated.Value) => () =>
@@ -11,24 +11,24 @@ const fadeIn = (anim: Animated.Value) => () =>
     toValue: 1,
     duration: 125,
     useNativeDriver: true,
-  }).start();
+  }).start()
 
 const fadeOut = (anim: Animated.Value) => () =>
   Animated.timing(anim, {
     toValue: 0,
     duration: 125,
     useNativeDriver: true,
-  }).start();
+  }).start()
 
 const opacityInterpolator = (anim: Animated.Value) =>
   anim.interpolate({
     inputRange: [0, 1],
     outputRange: [0.5, 1],
-  });
+  })
 
 export const Button: React.FC<Props> = ({ onPress, text }) => {
-  const [anim] = useState(() => new Animated.Value(1));
-  const [opacity] = useState(() => opacityInterpolator(anim));
+  const [anim] = useState(() => new Animated.Value(1))
+  const [opacity] = useState(() => opacityInterpolator(anim))
 
   const handlers = useMemo(
     () => ({
@@ -37,7 +37,7 @@ export const Button: React.FC<Props> = ({ onPress, text }) => {
       onPress: onPress,
     }),
     [onPress],
-  );
+  )
 
   return (
     <Animated.View
@@ -55,8 +55,8 @@ export const Button: React.FC<Props> = ({ onPress, text }) => {
         <Text style={styles.buttonText}>{text}</Text>
       </Pressable>
     </Animated.View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   buttonView: {
@@ -75,4 +75,4 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
-});
+})

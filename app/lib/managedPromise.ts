@@ -1,4 +1,4 @@
-type KeyedPromiseFn<K, T> = (key?: K) => Promise<T>;
+type KeyedPromiseFn<K, T> = (key?: K) => Promise<T>
 
 /**
  * Create a one-at-a-time promise function that will always
@@ -10,21 +10,21 @@ type KeyedPromiseFn<K, T> = (key?: K) => Promise<T>;
 export const managedPromise = <K, T>(
   fn: KeyedPromiseFn<K, T>,
 ): KeyedPromiseFn<K, T> => {
-  const promises = new Map<K | undefined, Promise<T>>();
+  const promises = new Map<K | undefined, Promise<T>>()
 
   // Return either the in-flight promise or create a new one for the key.
   return (key) => {
-    let promise = promises.get(key);
+    let promise = promises.get(key)
 
     if (promise === undefined) {
       // Create and manage the promise.
       promise = fn(key).then((data) => {
-        promises.delete(key);
-        return data;
-      });
-      promises.set(key, promise);
+        promises.delete(key)
+        return data
+      })
+      promises.set(key, promise)
     }
 
-    return promise;
-  };
-};
+    return promise
+  }
+}

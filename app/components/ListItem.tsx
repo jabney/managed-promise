@@ -1,17 +1,17 @@
-import React from 'react';
-import { Text, StyleSheet, Animated } from 'react-native';
-import { Item } from 'app/services/ListService';
-import { schemeCategory10, color } from 'd3';
+import React from 'react'
+import { Text, StyleSheet, Animated } from 'react-native'
+import { Item } from 'app/services/ListService'
+import { schemeCategory10, color } from 'd3'
 
 interface Props {
-  item: Item;
-  index: number;
+  item: Item
+  index: number
 }
 
 const getGroupColor = (num: number) =>
   color(schemeCategory10[num % 10])
     ?.darker(2)
-    .formatHex() ?? '#777';
+    .formatHex() ?? '#777'
 
 export const ListItem: React.FC<Props> = ({ item }) => (
   <Animated.View
@@ -24,7 +24,7 @@ export const ListItem: React.FC<Props> = ({ item }) => (
       <Text style={styles.text}>{`Response: ${item.groupId + 1}`}</Text>
     )}
   </Animated.View>
-);
+)
 
 const styles = StyleSheet.create({
   container: {
@@ -44,4 +44,4 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
   },
-});
+})

@@ -1,23 +1,23 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { ListService, ReadonlyList } from 'app/services/ListService';
+import React, { useContext, useEffect, useState } from 'react'
+import { ListService, ReadonlyList } from 'app/services/ListService'
 
 const ListContext = React.createContext<{
-  list: ReadonlyList;
-  addItem: () => Promise<void>;
-  deleteItem: (id: number) => Promise<void>;
-  clear: () => Promise<void>;
+  list: ReadonlyList
+  addItem: () => Promise<void>
+  deleteItem: (id: number) => Promise<void>
+  clear: () => Promise<void>
 }>({
   list: [],
   addItem: () => Promise.reject('context not initialized'),
   deleteItem: () => Promise.reject('context not initialized'),
   clear: () => Promise.reject('context not initialized'),
-});
+})
 
 export const ListProvider: React.FC = ({ children }) => {
-  const [svc] = useState(() => new ListService());
-  const [list, setList] = useState<ReadonlyList>([]);
+  const [svc] = useState(() => new ListService())
+  const [list, setList] = useState<ReadonlyList>([])
 
-  useEffect(() => svc.observe(setList), []);
+  useEffect(() => svc.observe(setList), [])
 
   return (
     <ListContext.Provider
@@ -29,7 +29,7 @@ export const ListProvider: React.FC = ({ children }) => {
       }}>
       {children}
     </ListContext.Provider>
-  );
-};
+  )
+}
 
-export const useListContext = () => useContext(ListContext);
+export const useListContext = () => useContext(ListContext)
